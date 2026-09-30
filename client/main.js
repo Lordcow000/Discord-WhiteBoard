@@ -18,8 +18,6 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-setupInputSync(discordSdk.channelId); 
-
 setupDiscordSdk().then(() => {
   console.log("Discord SDK is authenticated");
 
@@ -50,14 +48,12 @@ async function setupDiscordSdk() {
   });
 
   // Retrieve an access_token from your activity's server
-  const response = await fetch("https://lordcow-whiteboard.onrender.com/api/token", {
+  const response = await fetch("https://onrender.com", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      code,
-    }),
+    body: JSON.stringify({ code }),
   });
   const { access_token } = await response.json();
 

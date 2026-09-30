@@ -16,11 +16,12 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: "https://vercel.app",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
   },
-  transports: ['websocket'],
-  allowEIO3: true            
+  transports: ['websocket']
 });
+
 
 
 
