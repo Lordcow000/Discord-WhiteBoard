@@ -31,6 +31,7 @@ app.use(express.json());
 const roomHistories = {};
 
 io.on("connection", (socket) => {
+  console.log('MEOWOWNEOWNEOWNEOWMEOWMEO')
   socket.on("join-channel", (channelId) => {
 
     socket.join(channelId);
