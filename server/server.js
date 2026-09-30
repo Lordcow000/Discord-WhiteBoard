@@ -15,8 +15,11 @@ const httpServer = createServer(app);
 // Initialize Socket.io on top of your HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://discord-white-board.vercel.app",
-  }
+    origin: "https://vercel.app",
+    methods: ["GET", "POST"]
+  },
+  transports: ['websocket'],
+  allowEIO3: true            
 });
 
 

@@ -3,7 +3,15 @@ import { io } from "socket.io-client";
 import rocketLogo from '/rocket.png';
 import "./style.css";
 
-const socket = io('https://lordcow-whiteboard.onrender.com'); 
+const socket = io('https://lordcow-whiteboard.onrender.com', {
+  transports: ['websocket'],
+  upgrade: false
+}); 
+
+
+socket.on('connect_error', (err) => {
+  console.error("Socket Network Failure:", err.message);
+});
 
 // Will eventually store the authenticated user's access_token
 let auth;
