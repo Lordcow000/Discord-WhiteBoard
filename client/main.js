@@ -66,7 +66,12 @@ document.querySelector('#app').innerHTML = `
     <img src="${rocketLogo}" class="logo" alt="Discord" />
     <h1>Hello, World!</h1>
     <input type="text" id="username" name="username" placeholder="Type to sync...">
-    <br> 
+    <br>
+    <div class="controls">
+      <button id="btn-paint">Paint</button>
+      <button id="btn-erase">Eraser</button>
+    </div>
+
     <canvas id="canvas" name="canvas" height="600" width="800"></canvas>
   </div>
 `;
@@ -149,7 +154,7 @@ let goodToDraw = false;
 
 socket.on('canvas-history', (history) => {
   history.forEach(line => {
-      drawLineSegment(line.p0, line.p1, line.color, line.width);
+      drawLineSegment(line.p0, line.p1, line.color, line.width, line.mode);
   });
   goodToDraw = true;
 });
@@ -163,14 +168,34 @@ const strokeWidth = 25;
 // Drawing state
 let latestPoint;
 let drawing = false;
+let isEraser = false;
 
 // Set up our drawing context
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
+document.getElementById('btn-erase').addEventListener('click', () => {
+  isEraser = true;
+});
+
+document.getElementById('btn-paint').addEventListener('click', () => {
+  isEraser = false;
+});
+
+
+context.globalCompositeOperation = 'source-over'
+
 const channelId = discordSdk.channelId
 
-const drawLineSegment = (p0, p1, strokeColor, width) => {
+const drawLineSegment = (p0, p1, strokeColor, width, mode = 'paint') => {
+  context.save()
+
+  if (mode === 'erase') {
+    context.globalCompositeOperation = 'destination-out'
+  } else {
+    context.globalCompositeOperation = 'source-over';
+  }
+
   context.beginPath();
   context.moveTo(p0[0], p0[1]);
   context.strokeStyle = strokeColor;
@@ -179,6 +204,8 @@ const drawLineSegment = (p0, p1, strokeColor, width) => {
   context.lineJoin = "round";
   context.lineTo(p1[0], p1[1]);
   context.stroke();
+
+  context.restore()
 };
 
 
@@ -186,7 +213,10 @@ const drawLineSegment = (p0, p1, strokeColor, width) => {
 
 const continueStroke = newPoint => {
   if(!goodToDraw) return;
-  drawLineSegment(latestPoint, newPoint, colour, strokeWidth)
+
+  const currentMode = isEraser ? 'erase' : 'paint';
+
+  drawLineSegment(latestPoint, newPoint, colour, strokeWidth, currentMode)
   
   socket.emit('draw-line', {
     channelId,
@@ -194,7 +224,8 @@ const continueStroke = newPoint => {
         p0: latestPoint, 
         p1: newPoint, 
         color: colour, 
-        width: strokeWidth 
+        width: strokeWidth,
+        mode: currentMode
     }
   });
 
@@ -202,7 +233,7 @@ const continueStroke = newPoint => {
 };
 
 socket.on('update-line', (data) => {
-  drawLineSegment(data.p0, data.p1, data.color, data.width);
+  drawLineSegment(data.p0, data.p1, data.color, data.width, data.mode);
 });
 
 // Event helpers
