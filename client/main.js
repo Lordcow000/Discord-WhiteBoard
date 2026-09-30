@@ -48,13 +48,15 @@ async function setupDiscordSdk() {
   });
 
   // Retrieve an access_token from your activity's server
-  const response = await fetch("https://onrender.com", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ code }),
-  });
+  const response = await fetch("https://lordcow-whiteboard.onrender.com/api/token",
+	{
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ code }),
+	}
+);
   const { access_token } = await response.json();
 
   // Authenticate with Discord client (using the access_token)
