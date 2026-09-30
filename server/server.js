@@ -15,7 +15,7 @@ const httpServer = createServer(app);
 // Initialize Socket.io on top of your HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Adjust this to match your frontend URL in production
+    origin: "https://discord-white-board.vercel.app",
   }
 });
 
