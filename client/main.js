@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import rocketLogo from '/rocket.png';
 import "./style.css";
 
-const socket = io(); 
+const socket = io('https://lordcow-whiteboard.onrender.com'); 
 
 // Will eventually store the authenticated user's access_token
 let auth;
