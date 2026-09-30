@@ -21,6 +21,8 @@ socket.on('connect_error', (err) => {
   console.error("Socket Network Failure:", err.message);
 });
 
+socket.emit('join-channel', 'activeRoom');
+
 // Will eventually store the authenticated user's access_token
 let auth;
 
