@@ -3,10 +3,18 @@ import { io } from "socket.io-client";
 import rocketLogo from '/rocket.png';
 import "./style.css";
 
-const socket = io('https://lordcow-whiteboard.onrender.com', {
-  transports: ['websocket'],
-  upgrade: false
-}); 
+const socket = io({
+  path: "/api/socket.io",
+  transports: ["websocket", "polling"]
+});
+
+socket.on("connect", () => {
+	console.log("CONNECTED:", socket.id);
+});
+
+socket.on("connect_error", (err) => {
+	console.error("CONNECTION ERROR:", err.message);
+});
 
 
 socket.on('connect_error', (err) => {
@@ -48,15 +56,14 @@ async function setupDiscordSdk() {
   });
 
   // Retrieve an access_token from your activity's server
-  const response = await fetch("https://lordcow-whiteboard.onrender.com/api/token",
-	{
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ code }),
-	}
-);
+  const response = await fetch("/api/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code }),
+  });
+
   const { access_token } = await response.json();
 
   // Authenticate with Discord client (using the access_token)

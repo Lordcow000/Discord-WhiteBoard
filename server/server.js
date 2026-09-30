@@ -12,14 +12,16 @@ const port = process.env.PORT || 3001;
 
 const httpServer = createServer(app);
 
-// Initialize Socket.io on top of your HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://discord-white-board.vercel.app",
+    origin: [
+      "https://discord-white-board.vercel.app", 
+      "https://*.discordsays.com"
+    ],
     methods: ["GET", "POST"],
     credentials: true
   },
-  transports: ['websocket']
+  transports: ['polling', 'websocket'] 
 });
 
 
