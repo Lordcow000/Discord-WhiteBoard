@@ -8,7 +8,7 @@ import { time } from "console";
 dotenv.config({ path: "../.env" });
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 const httpServer = createServer(app);
 
