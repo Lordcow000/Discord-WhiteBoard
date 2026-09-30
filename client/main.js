@@ -146,24 +146,27 @@ async function appendGuildAvatar() {
 }
 
 function setupInputSync(channelId) {
+
+  const activeRoom = channelId || "fallback-whiteboard-room";
+  console.log("Emitting join-channel for room:", activeRoom);
+  socket.emit('join-channel', activeRoom);
+
+
   const inputEl = document.querySelector('#username');
+  if (inputEl) {
 
-  if (!inputEl) return;
-  
-  if (channelId) {
-    socket.emit('join-channel', channelId);
+    inputEl.addEventListener('input', () => {
+      socket.emit('input-change', inputEl.value);
+    });
+
+
+    socket.on('update-input', (newValue) => {
+      inputEl.value = newValue;
+    });
+  } else {
+    console.warn("Could not find #username input element yet, but room join proceeded successfully.");
   }
-
-  // Emit changes to the server as the user types
-  inputEl.addEventListener('input', () => {
-    socket.emit('input-change', inputEl.value);
-  });
-
-  // Receive changes from other clients in the Discord voice channel
-  socket.on('update-input', (newValue) => {
-    inputEl.value = newValue;
-  });
-};
+}
 
 let goodToDraw = false;
 
