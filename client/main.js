@@ -10,6 +10,8 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
+setupInputSync(discordSdk.channelId); 
+
 setupDiscordSdk().then(() => {
   console.log("Discord SDK is authenticated");
 
