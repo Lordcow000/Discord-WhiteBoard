@@ -35,7 +35,6 @@ setupDiscordSdk().then(() => {
   //appendGuildAvatar();
 
   setupInputSync(discordSdk.channelId);
-  socket.emit('meow');
 
   // We can now make API calls within the scopes we requested in setupDiscordSDK()
   // Note: the access_token returned is a sensitive secret and should be treated as such
@@ -44,6 +43,7 @@ setupDiscordSdk().then(() => {
 async function setupDiscordSdk() {
   await discordSdk.ready();
   console.log("Discord SDK is ready");
+  socket.emit('meow');
 
   // Authorize with Discord Client
   const { code } = await discordSdk.commands.authorize({
