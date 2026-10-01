@@ -28,18 +28,18 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-setupDiscordSdk().then(() => {
-  console.log("Discord SDK is authenticated");
+// setupDiscordSdk().then(() => {
+//   console.log("Discord SDK is authenticated");
 
-  //appendVoiceChannelName();
-  //appendGuildAvatar();
+//   //appendVoiceChannelName();
+//   //appendGuildAvatar();
 
-  setupInputSync(discordSdk.channelId);
+//   setupInputSync(discordSdk.channelId);
 
-  // We can now make API calls within the scopes we requested in setupDiscordSDK()
-  // Note: the access_token returned is a sensitive secret and should be treated as such
-});
-
+//   // We can now make API calls within the scopes we requested in setupDiscordSDK()
+//   // Note: the access_token returned is a sensitive secret and should be treated as such
+// });
+setupDiscordSdk();
 async function setupDiscordSdk() {
   await discordSdk.ready();
   console.log("Discord SDK is ready");
