@@ -28,57 +28,6 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-// setupDiscordSdk().then(() => {
-//   console.log("Discord SDK is authenticated");
-
-//   //appendVoiceChannelName();
-//   //appendGuildAvatar();
-
-//   setupInputSync(discordSdk.channelId);
-
-//   // We can now make API calls within the scopes we requested in setupDiscordSDK()
-//   // Note: the access_token returned is a sensitive secret and should be treated as such
-// });
-setupDiscordSdk();
-async function setupDiscordSdk() {
-  await discordSdk.ready();
-  console.log("Discord SDK is ready");
-  socket.emit('meow');
-
-  // Authorize with Discord Client
-  const { code } = await discordSdk.commands.authorize({
-    client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
-    response_type: "code",
-    state: "",
-    prompt: "none",
-    scope: [
-      "identify",
-      "guilds",
-      "applications.commands"
-    ],
-  });
-
-  // Retrieve an access_token from your activity's server
-  const response = await fetch("/api/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ code }),
-  });
-
-  const { access_token } = await response.json();
-
-  // Authenticate with Discord client (using the access_token)
-  auth = await discordSdk.commands.authenticate({
-    access_token,
-  });
-
-  if (auth == null) {
-    throw new Error("Authenticate command failed");
-  }
-}
-
 document.querySelector('#app').innerHTML = `
   <div>
     <img src="${rocketLogo}" class="logo" alt="Discord" />
@@ -93,6 +42,107 @@ document.querySelector('#app').innerHTML = `
     <canvas id="canvas" name="canvas" height="600" width="800"></canvas>
   </div>
 `;
+
+async function setupDiscordSdk() {
+  const queryParams = new URLSearchParams(window.location.search);
+  if (!queryParams.has("frame_id")) {
+    console.warn("Not running inside Discord client. Mocking local development setup...");
+    setupInputSync("fallback-whiteboard-room");
+    setupCanvasLogic(); 
+    return;
+  }
+
+  try {
+    await discordSdk.ready();
+    console.log("Discord SDK is ready");
+    socket.emit('meow');
+
+    
+    const { code } = await discordSdk.commands.authorize({
+      client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
+      response_type: "code",
+      state: "",
+      prompt: "none",
+      scope: ["identify", "guilds", "applications.commands"],
+    });
+
+    const response = await fetch("/api/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+
+    const { access_token } = await response.json();
+
+    auth = await discordSdk.commands.authenticate({ access_token });
+
+    if (auth == null) {
+      throw new Error("Authenticate command failed");
+    }
+
+    
+    setupInputSync(discordSdk.channelId);
+    setupCanvasLogic();
+
+  } catch (error) {
+    console.error("Discord SDK Initialization Failed:", error);
+  }
+}
+
+
+// setupDiscordSdk().then(() => {
+//   console.log("Discord SDK is authenticated");
+
+//   //appendVoiceChannelName();
+//   //appendGuildAvatar();
+
+//   setupInputSync(discordSdk.channelId);
+
+//   // We can now make API calls within the scopes we requested in setupDiscordSDK()
+//   // Note: the access_token returned is a sensitive secret and should be treated as such
+// });
+setupDiscordSdk();
+
+// async function setupDiscordSdk() {
+//   await discordSdk.ready();
+//   console.log("Discord SDK is ready");
+//   socket.emit('meow');
+
+//   // Authorize with Discord Client
+//   const { code } = await discordSdk.commands.authorize({
+//     client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
+//     response_type: "code",
+//     state: "",
+//     prompt: "none",
+//     scope: [
+//       "identify",
+//       "guilds",
+//       "applications.commands"
+//     ],
+//   });
+
+//   // Retrieve an access_token from your activity's server
+//   const response = await fetch("/api/token", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ code }),
+//   });
+
+//   const { access_token } = await response.json();
+
+//   // Authenticate with Discord client (using the access_token)
+//   auth = await discordSdk.commands.authenticate({
+//     access_token,
+//   });
+
+//   if (auth == null) {
+//     throw new Error("Authenticate command failed");
+//   }
+// }
+
+
 
 async function appendVoiceChannelName() {
   const app = document.querySelector('#app');
