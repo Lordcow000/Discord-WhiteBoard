@@ -35,6 +35,7 @@ setupDiscordSdk().then(() => {
   //appendGuildAvatar();
 
   setupInputSync(discordSdk.channelId);
+  socket.emit('meow');
 
   // We can now make API calls within the scopes we requested in setupDiscordSDK()
   // Note: the access_token returned is a sensitive secret and should be treated as such
