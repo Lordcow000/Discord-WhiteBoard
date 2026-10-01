@@ -15,7 +15,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: [
-      "https://discord-white-board.vercel.app", 
+      "https://discord-white-board-git-getting-it-to-work-lordcow.vercel.app", 
       "https://*.discordsays.com"
     ],
     methods: ["GET", "POST"],
